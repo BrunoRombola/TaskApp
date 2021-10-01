@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
-
+const Task = require('./tasks')
 const userSchema = new mongoose.Schema({
     name: {
         type: String,           
@@ -38,23 +38,17 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     }]
+},{
+    timestamps: true
 })
 
-
+//create virtual elements
 userSchema.virtual('tasks',{
     ref: 'Task',
     localField:'_id',//which element will be related to tasks
     foreignField:'owner'//which element of tasks will be on relation
 })
-/*userSchema.methods.getPublicProfile = function(){
-    const user = this
-    const userData = user.toObject()//allow me to manipulate the userdata without modify the user data
 
-    delete userData.password
-    delete userData.tokens
-    return userData
-}*/
- //this method do the same fo " getpublicprofile" but using user only. no method.
 userSchema.methods.toJSON = function(){
     const user = this
     const userData = user.toObject()//allow me to manipulate the userdata without modify the user data
@@ -96,7 +90,13 @@ userSchema.pre('save', async function (next){
     }
     next()  
 
-})//antes de que ocurra algo
+})
+//delete user tasks when user was delete
+userSchema.pre('remove', async function(next){
+    
+    Task.deleteMany({owner: this._id})
+    next()
+})
 
 const User = mongoose.model('User', userSchema)
 module.exports = User

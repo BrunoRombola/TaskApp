@@ -6,8 +6,7 @@ const User = require('../models/users')
 
 const router = new express.Router()
 
-//create data//
-
+//post data//
 router.post('/users', async (req, res) => {
     const user = new User(req.body)
 
@@ -19,7 +18,6 @@ router.post('/users', async (req, res) => {
         res.status(400).send(e)
     }
 })
-
 router.post('/users/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
@@ -29,14 +27,6 @@ router.post('/users/login', async (req, res) => {
         res.status(400).send()
     }
 })
-
-/*
-the idea of logout is simple
-1)when you login for any system, you generate an auth token
-2) when you want to logout one of those session you delete 
-that token for the tokens list,
-3) that user cannot be authenticated again (cuz you didnt habe the element)
-*/
 router.post('/users/logout',auth,async (req, res)=>{
     try{
         req.user.tokens = req.user.tokens.filter((token)=>{
@@ -59,11 +49,10 @@ router.post('/users/logoutAll',auth, async(req,res)=>{
 })
 
 
-//read data//
+//get data//
 router.get('/users/me', auth , async (req,res)=>{
     res.send(req.user)
 })
-
 router.get('/users/:id',async (req,res)=>{
     const _id = req.params.id
     try{
@@ -76,7 +65,6 @@ router.get('/users/:id',async (req,res)=>{
 })
 
 //update data//
-
 router.patch('/users/me', auth, async(req, res)=>{
     const updates = Object.keys(req.body)//separate the keys of the object "req.body"
     const allowedUpdates = ['name','email','password','age'] //array to comprobe if the keys are those
@@ -94,7 +82,6 @@ router.patch('/users/me', auth, async(req, res)=>{
 })
 
 //delete data//
-
 router.delete('/users', async(req, res)=>{
     
     try{
@@ -106,7 +93,6 @@ router.delete('/users', async(req, res)=>{
     }
 
 })
-
 router.delete('/users/me', auth, async(req,res)=>{
 
     try{
