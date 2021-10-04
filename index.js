@@ -2,7 +2,12 @@
 const express = require('express')
 require('./db/mongoose')
 
-const bcrypt = require('bcryptjs')
+const multer = require('multer')
+const upload = multer({
+    dest: 'images'
+})
+
+
 const userRouter = require('./router/users')
 const taskRouter = require('./router/tasks')
 
@@ -11,7 +16,6 @@ const app = express()
 const port = process.env.PORT || 3000
 
 //middleware
-
 
 app.use(express.json())
 //routers
